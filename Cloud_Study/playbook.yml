@@ -1,0 +1,42 @@
+---
+- name: Install HEXO
+  hosts: myhost
+  remote_user: ubuntu
+
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: install nodejs
+      apt:
+        name: nodejs
+      become: yes
+
+    - name: install npm
+      apt:
+        name: npm
+      become: yes
+
+    - name: update npm
+      shell: |
+        npm cache clean -f
+        npm install -g n
+        n stable
+      become: yes
+      
+    - name: install hexo
+      command: npm install hexo-cli -g
+      become: yes
+
+    - name: setup blog
+      shell: |
+        hexo init blog
+        cd blog
+      become: yes
+
+    - name: start the server
+      command: nohup hexo server -p 80&
+      become: yes
